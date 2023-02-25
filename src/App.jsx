@@ -1,11 +1,16 @@
 import "./App.css";
-import Search from "./Components/Search/Search";
+import Home from "./Components/Home/Home";
+import {Route,Routes} from "react-router-dom" ;
+import View from "./Components/View/View";
 
 function App() {
  
   return (
     <div className="App">
-      <Search />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/view/:id" element={<View/>} />
+      </Routes>
     </div>
   );
 }
