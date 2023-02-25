@@ -13,7 +13,8 @@ import { useEffect } from "react";
 
 export default function View() {
   let [state, setState] = useState({});
-  let [like, setLike] = useState(false);
+  let [like, setLike] = useState("false");
+  let [count, setCount] = useState(1);
   let { id } = useParams();
   let viewedMovies = JSON.parse(localStorage.getItem("viewedMovieList")) || [];
 
@@ -23,12 +24,26 @@ export default function View() {
   };
 
   let likeBtn = () => {
-    if (like) {
-      setLike(false);
-    } else {
-      setLike(true);
+    // if (like) {
+    //   setLike(false);
+    // } else {
+    //   setLike(true);
+    // }
+    let index = viewedMovies.findIndex((elem) => elem.movieId === id);
+    if (index !== -1) {
+      console.log(viewedMovies[index].like);
+      if (viewedMovies[index].like === "true") {
+        viewedMovies[index].like = "false";
+        setLike(false);
+        localStorage.setItem("viewedMovieList", JSON.stringify(viewedMovies));
+      } else {
+        viewedMovies[index].like = "true";
+        setLike(true);
+        localStorage.setItem("viewedMovieList", JSON.stringify(viewedMovies));
+      }
     }
   };
+  
   useEffect(() => {
     getData(id);
   }, []);
@@ -41,21 +56,20 @@ export default function View() {
       setState(data);
 
       if (viewedMovies.length === 0) {
-        let view = { id: id, count: 1 };
+        let view = { movieId: id, count: 1, like: "false" };
         viewedMovies.push(view);
         localStorage.setItem("viewedMovieList", JSON.stringify(viewedMovies));
-    } else {
-          console.log(viewedMovies);
-        // viewedMovies.filter((element) => {
-        //   // console.log(element) ;
-        //   if (element.id == id) {
-        //     element.count += 1;
-        //     return;
-        //   }
-        //   // localStorage.setItem("viewedMovieList", JSON.stringify(viewedMovies));
-        // });
-        // localStorage.setItem("viewedMovieList", JSON.stringify(viewedMovies));
-        // console.log(viewedMovies) ;
+      } else {
+        let index = viewedMovies.findIndex((elem) => elem.movieId === id);
+        console.log(index);
+        if (index == -1) {
+          let view = { movieId: id, count: 1 };
+          viewedMovies.push(view);
+        } else {
+          viewedMovies[index].count += 1;
+          setCount(viewedMovies[index].count);
+        }
+        localStorage.setItem("viewedMovieList", JSON.stringify(viewedMovies));
       }
     } catch (error) {
       console.log("error occured");
@@ -91,7 +105,7 @@ export default function View() {
           <Text> {releaseYear} </Text>
           <Text>Ratings : {state.vote_average}</Text>
           <Text>{state.overview}</Text>
-          <Text>View : 1</Text>
+          <Text>View : {count}</Text>
           <Box
             display="flex"
             alignItems="center"
@@ -102,7 +116,7 @@ export default function View() {
               <Link to="/"> Close </Link>
             </Button>
             <Button color="blue.600" fontSize="2xl" onClick={likeBtn}>
-              {like ? "liked" : "like"}
+              {like ? "unlike" : "like"}
             </Button>
           </Box>
         </Stack>

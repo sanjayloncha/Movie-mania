@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { movieAction } from "../../Redux/Action/action";
 import { useDispatch } from "react-redux";
 import {
