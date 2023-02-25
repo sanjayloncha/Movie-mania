@@ -17,6 +17,14 @@ export default function View() {
   let [count, setCount] = useState(1);
   let { id } = useParams();
   let viewedMovies = JSON.parse(localStorage.getItem("viewedMovieList")) || [];
+  let index = viewedMovies.findIndex((elem) => elem.movieId === id);
+  
+  let liked ;
+  if (index !== -1) {
+     liked = viewedMovies[index].like;
+  } else {
+     liked = "false" ;
+  }
 
   let style = {
     background: "black",
@@ -24,26 +32,21 @@ export default function View() {
   };
 
   let likeBtn = () => {
-    // if (like) {
-    //   setLike(false);
-    // } else {
-    //   setLike(true);
-    // }
+    if(like){
+        setLike(false) ;
+    }else{
+        setLike(true) ;
+    }
     let index = viewedMovies.findIndex((elem) => elem.movieId === id);
-    if (index !== -1) {
-      console.log(viewedMovies[index].like);
-      if (viewedMovies[index].like === "true") {
-        viewedMovies[index].like = "false";
-        setLike(false);
-        localStorage.setItem("viewedMovieList", JSON.stringify(viewedMovies));
-      } else {
-        viewedMovies[index].like = "true";
-        setLike(true);
-        localStorage.setItem("viewedMovieList", JSON.stringify(viewedMovies));
-      }
+    if (viewedMovies[index].like === "true") {
+      viewedMovies[index].like = "false";
+      localStorage.setItem("viewedMovieList", JSON.stringify(viewedMovies));
+    } else {
+      viewedMovies[index].like = "true";
+      localStorage.setItem("viewedMovieList", JSON.stringify(viewedMovies));
     }
   };
-  
+
   useEffect(() => {
     getData(id);
   }, []);
@@ -61,9 +64,8 @@ export default function View() {
         localStorage.setItem("viewedMovieList", JSON.stringify(viewedMovies));
       } else {
         let index = viewedMovies.findIndex((elem) => elem.movieId === id);
-        console.log(index);
         if (index == -1) {
-          let view = { movieId: id, count: 1 };
+          let view = { movieId: id, count: 1, like: "false" };
           viewedMovies.push(view);
         } else {
           viewedMovies[index].count += 1;
@@ -78,7 +80,6 @@ export default function View() {
   const releaseYear = state.release_date
     ? state.release_date.substring(0, 4)
     : "";
-  //   console.log(releaseYear) ;
 
   return (
     <Flex
@@ -116,7 +117,7 @@ export default function View() {
               <Link to="/"> Close </Link>
             </Button>
             <Button color="blue.600" fontSize="2xl" onClick={likeBtn}>
-              {like ? "unlike" : "like"}
+              {liked === "true" ? "unlike" : "like"}
             </Button>
           </Box>
         </Stack>
